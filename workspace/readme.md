@@ -1,4 +1,96 @@
-# Terraform workspace
+### **Terraform Workspaces**
+
+Terraform Workspaces provide a mechanism to manage multiple environments (e.g., **development**, **testing**, and **production**) using a single configuration file. This concept allows infrastructure for each environment to be isolated while sharing the same `main.tf` file.
+
+---
+
+### **Features of Workspaces**
+1. **Environment Segregation**:
+   - Each workspace maintains its own state file, enabling isolation between environments.
+   - Example: You can create `dev-instances` in the `development` workspace and `test-instances` in the `test` workspace using the same configuration.
+
+2. **Git-Like Workflow**:
+   - Similar to branches in Git:
+     - Create a "child" workspace for specific tasks.
+     - Switch between workspaces to manage resources independently.
+
+---
+
+### **Basic Workspace Commands**
+
+| **Command**                            | **Description**                                                                             |
+|----------------------------------------|---------------------------------------------------------------------------------------------|
+| `terraform workspace new <name>`       | Creates a new workspace and switches to it.                                                |
+| `terraform workspace list`             | Lists all available workspaces.                                                            |
+| `terraform workspace show`             | Displays the currently active workspace.                                                   |
+| `terraform workspace select <name>`    | Switches to a specified workspace.                                                         |
+
+---
+
+### **Practical Example**
+
+#### **1. Create and Switch Workspaces**
+- Create a new workspace:
+  ```bash
+  terraform workspace new development
+  ```
+  Output: A new workspace named `development` is created and set as active.
+
+- List available workspaces:
+  ```bash
+  terraform workspace list
+  ```
+  Output: Displays all workspaces, with the active workspace highlighted.
+
+- Switch to a different workspace:
+  ```bash
+  terraform workspace select test
+  ```
+
+---
+
+#### **2. Apply Changes in a Workspace**
+- Use `-var-file` to specify variables for the workspace:
+  ```bash
+  terraform apply -var-file="dev.tfvars"
+  ```
+  This command creates resources based on `dev.tfvars` in the `development` workspace.
+
+---
+
+#### **3. Destroy Resources in a Workspace**
+- Destroy infrastructure specific to a workspace:
+  ```bash
+  terraform destroy -var-file="test.tfvars"
+  ```
+  This removes resources created in the `test` workspace.
+
+---
+
+### **Workspace State Management**
+1. **State Isolation**:
+   - Each workspace maintains its own **`terraform.tfstate`** file.
+   - Changes in one workspace (e.g., `development`) do not affect resources in another (e.g., `test`).
+
+2. **Default Workspace**:
+   - The `default` workspace is created automatically when you initialize Terraform.
+   - It is recommended to avoid making major changes in the `default` workspace.
+
+---
+
+### **Use Cases of Workspaces**
+1. Managing **Development, Staging, and Production** environments.
+2. Isolating resources for **team-specific or project-specific** needs.
+3. Testing changes in isolated workspaces without affecting production.
+
+---
+
+Workspaces enhance efficiency and prevent conflicts when managing multiple environments. This feature is particularly helpful for teams following a **multi-environment infrastructure workflow**.
+---
+
+
+
+### Terraform workspace
 - By help of this terraform workspace using single main.tf file used in differet workspace
 - suppose i created dev-instances in developer workspace environmnet and later using that same main.tf file i switched to test workspace and using that main.tf file i created test-instances 
 - using workspace concept we able to create multi environments using single main.tf file 
@@ -6,42 +98,42 @@
 - like in git we are creating child branch and do work on child branch 
 - similar like here also 
 
-# To create tarrform workspace
+### To create tarrform workspace
 
         $ terraform workspace new development
     
 > Note:from above command it will create new workspace and automatically moved to that workspace 
 
-# To check How many Workspace to list all workspaces 
+### To check How many Workspace to list all workspaces 
 
         $ terraform workspace list 
 
-# To check active workspaces
+### To check active workspaces
 
         $ terraform workspace show 
     
-# To move One workspace to another workspace 
+### To move One workspace to another workspace 
 
         $ terraform workspace select <workspace name>
 
 
 
-# To loging aws cloud 
+### To loging aws cloud 
 
 ![Alt text](images/image.png)
 
 - terraform init
 ![Alt text](images/image-1.png)
 
-# workspace commands
+### workspace commands
 
 ![Alt text](images/image-2.png) 
 
-# To create dev workspace instance on dev workspace 
+### To create dev workspace instance on dev workspace 
 
 ![Alt text](images/image-3.png)
 
-
+```
             PS C:\Users\DELL\Desktop\terraform-work\workspace> terraform apply -var-file="dev.tfvars"
 
             Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
@@ -117,17 +209,17 @@
             Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
             PS C:\Users\DELL\Desktop\terraform-work\workspace> 
 
-
+```
 ![Alt text](images/image-4.png)
 
-# Now switch to test workspace 
-
-        $ terraform workspace select test 
-    
+### Now switch to test workspace 
+```
+terraform workspace select test 
+``` 
 ![Alt text](images/image-5.png)
 
 ![Alt text](images/image-6.png)
-
+```
             PS C:\Users\DELL\Desktop\terraform-work\workspace> terraform apply -var-file="test.tfvars"    
 
             Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
@@ -202,10 +294,10 @@
 
             Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
             PS C:\Users\DELL\Desktop\terraform-work\workspace> 
-
+```
 ![Alt text](images/image-7.png)
 
-# Now destroying instances 
+### Now destroying instances 
 
 ![Alt text](images/image-8.png)
 
