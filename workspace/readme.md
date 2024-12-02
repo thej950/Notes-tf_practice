@@ -120,7 +120,6 @@ Workspaces enhance efficiency and prevent conflicts when managing multiple envir
 
 ![Alt text](images/image.png)
 
-- terraform init
 ![Alt text](images/image-1.png)
 
 ### workspace commands
