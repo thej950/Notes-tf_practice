@@ -1,66 +1,145 @@
-# ssh To ec2 machine  
-- Generate sshkeys on local machine then paste our public key into terraform file it will able to conect remote machine with our local private key 
+### **Steps to SSH into an EC2 Machine Using Terraform and SSH Keys**
 
-            ssh-keygen
+---
 
-> above command will generate one public key and one private key
+### **Step 1: Generate SSH Keys**
 
-- create a resource which is aws_instance with key_name 
+Run the command below on your local machine to generate a pair of SSH keys:
+```bash
+ssh-keygen
+```
+- It will generate two files:
+  - `id_rsa` (private key)
+  - `id_rsa.pub` (public key)
 
-    resource "aws_instance" "myec2" {
-        ami                    = "ami-0fc5d935ebf8bc3bc"
-        instance_type          = "t2.micro"
-        key_name               = "aws-key"
-        vpc_security_group_ids = [aws_security_group.main-sg.id]
-        tags = {
-            Name = "My-instance"
-        }
-    }
+Save these files securely. The public key will be added to your Terraform configuration, and the private key will be used for SSH access.
 
+---
 
-- create a resource aws_security_group  with port open 22
+### **Step 2: Create Terraform Resources**
 
-    resource "aws_security_group" "main-sg" {
-        egress = [
-            {
-            cidr_blocks      = ["0.0.0.0/0"]
-            description      = ""
-            from_port        = 0
-            ipv6_cidr_blocks = []
-            prefix_list_ids  = []
-            prefix_list_ids  = []
-            protocol         = "-1"
-            security_groups  = []
-            self             = false
-            to_port          = 0
-            }
-        ]
-        ingress = [
-            {
-            cidr_blocks      = ["0.0.0.0/0"]
-            description      = ""
-            from_port        = 22
-            ipv6_cidr_blocks = []
-            prefix_list_ids  = []
-            protocol         = "tcp"
-            security_groups  = []
-            self             = false
-            to_port          = 22
-            }
-        ]
-    }
+1. **AWS Security Group**: Configure a security group to allow inbound SSH access on port 22.
 
-> from above code egress for outbount rules and ingress for inbound rules 
+```hcl
+resource "aws_security_group" "main-sg" {
+  name = "main-sg"
 
-- Now create resource aws_key_pair 
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-    resource "aws_key_pair" "myec2key" {
-        key_name   = "aws-key"
-        public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDUUsOUa315grnZ0cHqct8qGIA0nDcn0NTl4h39Miwm9wfot4YnGVAFChnpBvPHA/iftkyq9QKDb1YoNNL0Xxcs6bplQTloXj4MvvJB+x7pe1dLhFzlIzdBUvJZZNxkh3NujUZZ1PAy6yjDK2SAMXtm4R1FGK5zGW4rFcoPwUwYd3uHLiTb40mcY8oA1qpIDn8D/tERVUpS86DCCEN4X6Xzagst8VutfH4g3Sr8aU4W7hpdaO/dwxiSaS0gik7YdSbxiVY9qjHQucTD521sHUJelf6olw6WEpP1yLHjOgcDgpjlbY8ICmonV7Jjj4Az4IKgmk0+fWNDjzAQMmqF6H/h7n6l3pwJnKjPxs1Odt2uPuCr7EZ82higSD+uBQtAVfvt7Xs9jJuc/l0u+g8DB2wmLmgtvD7oRe5tLXxJICkDyEs3obyfWj1b/sTU1NfE582U5yH6lr9PHkemdimE6tZdehhJzvvjJUkFTeqDzYk2ip0VDPiOIYkS2h5wEMEV+6U= DELL@Navathej"
-    }  
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+```
 
-- Now connect to remote machine with public ip using private key 
+2. **AWS Key Pair**: Import the public key into AWS as an EC2 key pair.
 
-    $ chmod 400 aws-key
-    $ ssh -i aws-key ubuntu@12.2.23.3
+```hcl
+resource "aws_key_pair" "myec2key" {
+  key_name   = "aws-key"
+  public_key = file("~/.ssh/id_rsa.pub")  # Replace with the path to your public key
+}
+```
+
+3. **AWS EC2 Instance**: Launch an EC2 instance using the created key pair and security group.
+
+```hcl
+resource "aws_instance" "myec2" {
+  ami                    = "ami-0fc5d935ebf8bc3bc"  # Replace with a valid AMI
+  instance_type          = "t2.micro"
+  key_name               = aws_key_pair.myec2key.key_name
+  vpc_security_group_ids = [aws_security_group.main-sg.id]
+
+  tags = {
+    Name = "My-instance"
+  }
+}
+```
+
+---
+
+### **Step 3: Apply the Terraform Configuration**
+
+Run the following commands to deploy the resources:
+
+```bash
+terraform init
+terraform apply
+```
+- Confirm the creation of resources when prompted.
+- Note the **public IP** of the EC2 instance in the output.
+
+---
+
+### **Step 4: Connect to the EC2 Instance**
+
+Use the private key to connect to the instance:
+1. Set permissions for the private key:
+   ```bash
+   chmod 400 ~/.ssh/id_rsa
+   ```
+
+2. Connect to the EC2 instance:
+   ```bash
+   ssh -i ~/.ssh/id_rsa ubuntu@<public_ip>
+   ```
+   Replace `<public_ip>` with the EC2 instance's public IP from the Terraform output.
+
+---
+
+### **Full Example Code**
+
+```hcl
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_security_group" "main-sg" {
+  name = "main-sg"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_key_pair" "myec2key" {
+  key_name   = "aws-key"
+  public_key = file("~/.ssh/id_rsa.pub")
+}
+
+resource "aws_instance" "myec2" {
+  ami                    = "ami-0fc5d935ebf8bc3bc"
+  instance_type          = "t2.micro"
+  key_name               = aws_key_pair.myec2key.key_name
+  vpc_security_group_ids = [aws_security_group.main-sg.id]
+
+  tags = {
+    Name = "My-instance"
+  }
+}
+```
+
+---
+
+### **Verification**
+- Ensure that the public IP of the EC2 instance is reachable.
+- If you encounter issues connecting via SSH, check the security group settings to confirm port 22 is open.
 
