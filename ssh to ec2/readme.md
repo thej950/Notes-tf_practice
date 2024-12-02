@@ -142,7 +142,8 @@ resource "aws_instance" "myec2" {
 ### **Verification**
 - Ensure that the public IP of the EC2 instance is reachable.
 - If you encounter issues connecting via SSH, check the security group settings to confirm port 22 is open.
-- ---
+---
+### **More Information Multiple ways to connect Machine** 
 Terraform allows multiple ways to connect to machines (e.g., EC2 instances, virtual machines) for provisioning or configuration management. Here are the main methods:
 
 ---
