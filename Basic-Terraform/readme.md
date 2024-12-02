@@ -1,6 +1,3 @@
-Here’s a well-documented file with clear explanations and a structured layout for using Terraform to provision AWS EC2 instances. The file includes explanations for providers, resources, and their configurations.
-
----
 
 ### **Terraform File: `main.tf`**
 
@@ -92,7 +89,3 @@ resource "aws_instance" "my_ec2" {
 - **Secure Credentials:** Avoid hardcoding credentials in the Terraform file. Use the AWS CLI's `aws configure` command, environment variables, or AWS IAM roles.
 - **State Management:** Terraform uses a state file (`terraform.tfstate`) to track resource configurations. Store the state file securely (e.g., in an S3 bucket for shared environments).
 - **Version Control:** Commit the configuration file to a version control system (e.g., Git) but exclude sensitive data like credentials.
-
----
-
-This format provides clarity and ensures best practices are followed for provisioning an EC2 instance with Terraform.
