@@ -86,18 +86,16 @@ Terraform Workspaces provide a mechanism to manage multiple environments (e.g., 
 ---
 
 Workspaces enhance efficiency and prevent conflicts when managing multiple environments. This feature is particularly helpful for teams following a **multi-environment infrastructure workflow**.
+
 ---
-
-
-
-### Terraform workspace
+### Terraform workspace 
 - By help of this terraform workspace using single main.tf file used in differet workspace
 - suppose i created dev-instances in developer workspace environmnet and later using that same main.tf file i switched to test workspace and using that main.tf file i created test-instances 
 - using workspace concept we able to create multi environments using single main.tf file 
 - terraform Workspace it is work like similar to git 
 - like in git we are creating child branch and do work on child branch 
 - similar like here also 
-
+### Practice  
 ### To create tarrform workspace
 
         $ terraform workspace new development
