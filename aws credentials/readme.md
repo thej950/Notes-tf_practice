@@ -92,6 +92,22 @@ provider "aws" {
 
 ---
 
+## Here we can also use name instead of defaults 
+```bash
+vim ~/.aws/credentials
+```
+
+```bash
+[thej]
+aws_access_key_id = AKIA2LW3XXCQXISFFGWM
+aws_secret_access_key = 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
+```
+- use above profile in provoder.tf file or provider section 
+```hcl
+provider "aws" {
+  region = "us-east-1"
+  profile = "thej"
+```
 ## **Best Practices**
 1. **Avoid Hard-Coding Credentials:** Always keep credentials secure and outside the main configuration file.
 2. **Use Shared Credentials File or Environment Variables:** These methods are safer and more manageable.
