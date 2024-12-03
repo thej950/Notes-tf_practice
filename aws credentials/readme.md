@@ -91,7 +91,7 @@ provider "aws" {
 | Environment Variables      | Great for automation and temporary credentials | Variables need to be exported explicitly. |
 
 ---
-
+# Profile
 ## Here we can also use name instead of defaults 
 ```bash
 vim ~/.aws/credentials
