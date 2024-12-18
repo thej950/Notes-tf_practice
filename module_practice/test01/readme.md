@@ -1,4 +1,4 @@
-# Modules practice 
+# Modules practice  
 ### Before proceed download pem file in local machine use that name into modules\ec2_module\main.tf 
 ```bash
 key_name = "pem_filename"
